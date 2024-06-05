@@ -7,13 +7,15 @@ using UnityEngine.InputSystem;
 
 public class SpellSelector : MonoBehaviour
 {
-				[SerializeField] InputActionReference moveActionReference;
-				[SerializeField] GameObject book;
+				public static Action<SpellTypes> SpellSelected;
 
-				SpellTypes selectedSpell = SpellTypes.Fire;
-				Vector2 joystickAxisValue;
+				[SerializeField] private InputActionReference moveActionReference;
+				[SerializeField] private GameObject book;
 
-				public bool debounce = false;
+				private SpellTypes selectedSpell = SpellTypes.Fire;
+				private Vector2 joystickAxisValue;
+
+				private bool debounce = false;
 
 				// Start is called before the first frame update
 				void Start()
@@ -69,12 +71,16 @@ public class SpellSelector : MonoBehaviour
 								}
 
 								book.GetComponent<MeshRenderer>().material.color = GetSpellColour(selectedSpell);
+								FireSpellSelectedEvent();
 				}
 
 				Color GetSpellColour(SpellTypes type)
 				{
 								switch (type)
 								{
+												case SpellTypes.Gun:
+																return new Color(0.1f, 0.1f, 1f);
+
 												case SpellTypes.Fire:
 																return new Color(1f, 0f, 0f);
 
@@ -87,5 +93,10 @@ public class SpellSelector : MonoBehaviour
 												default:
 																return new Color(0f, 0f, 0f);
 								}
+				}
+
+				void FireSpellSelectedEvent()
+				{
+								SpellSelected?.Invoke(selectedSpell);
 				}
 }

@@ -5,14 +5,14 @@ using UnityEngine.InputSystem;
 
 public class FlameThrower : MonoBehaviour
 {
-    [SerializeField] InputActionReference triggerActionReference;
-    [SerializeField] GameObject particleEmitter;
-    [SerializeField] Transform origin;
-    [SerializeField] Transform target;
+    [SerializeField] private InputActionReference triggerActionReference;
+    [SerializeField] private GameObject particleEmitter;
+    [SerializeField] private Transform origin;
+    [SerializeField] private Transform target;
 
-    float triggerValue;
-    ParticleSystem emitter;
-    ParticleSystem.MainModule main;
+    private float triggerValue;
+    private ParticleSystem emitter;
+    private ParticleSystem.MainModule main;
 
     // Start is called before the first frame update
     void Start()

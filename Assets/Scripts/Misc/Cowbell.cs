@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Cowbell : MonoBehaviour
 {
-				AudioSource _audioSource;
-				ParticleSystem _pSystem;
+				private AudioSource _audioSource;
+				private ParticleSystem _pSystem;
 
 				private void Start()
 				{
