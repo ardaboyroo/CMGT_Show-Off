@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class LookAtCamera : MonoBehaviour
 {
-    Transform camera;
+    Transform cam;
 
     // Start is called before the first frame update
     void Start()
     {
-        camera = Camera.main.transform;
+        cam = Camera.main.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(camera, Vector3.forward);
+        transform.LookAt(cam, Vector3.forward);
     }
 }

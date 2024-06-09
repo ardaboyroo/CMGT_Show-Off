@@ -5,15 +5,37 @@ using UnityEngine;
 
 public class StaffOrbDetector : MonoBehaviour
 {
-    public static Action<GameObject> OnCollision;
+    public static Action<List<GameObject>> OnCollision;
 
-				private void OnTriggerEnter(Collider collision)
+				private List<GameObject> touching;
+
+				void Start()
 				{
-								FireOnCollideEvent(collision.gameObject);
+								touching = new List<GameObject>();
 				}
 
-				void FireOnCollideEvent(GameObject obj)
+				void OnTriggerEnter(Collider other)
+				{
+								if (!touching.Contains(other.gameObject))
+								{
+												touching.Add(other.gameObject);
+								}
+
+								FireOnCollideEvent();
+				}
+
+				void OnTriggerExit(Collider other)
+				{
+								if (touching.Contains(other.gameObject))
+								{
+												touching.Remove(other.gameObject);
+								}
+
+								FireOnCollideEvent();
+				}
+
+				void FireOnCollideEvent()
     {
-        OnCollision?.Invoke(obj);
+        OnCollision?.Invoke(touching);
     }
 }

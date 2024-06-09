@@ -51,7 +51,10 @@ public class SpellCaster : MonoBehaviour
 
 
 				// Lightning
+				private GameObject lightningStrikePrefabInstance;
 				private GameObject sparksPrefabInstance;
+
+				private ParticleSystem lightningStrikeEmitter;
 				private ParticleSystem sparksEmitter;
 
 				private void OnEnable()
@@ -64,7 +67,7 @@ public class SpellCaster : MonoBehaviour
 								CastDetector.OnCast -= OnCastEventHandler;
 				}
 
-				#region STUFF
+				#region EVENT_HANDLERS
 				// Update is called once per frame
 				void Update()
 				{
@@ -94,7 +97,8 @@ public class SpellCaster : MonoBehaviour
 				// Check for new spell
 				void OnCastEventHandler(SpellTypes type)
 				{
-								if (currentSpell != type) EndAllSpells();
+								//if (currentSpell != type) EndAllSpells();
+								EndAllSpells();
 
 								switch (type)
 								{
@@ -134,7 +138,7 @@ public class SpellCaster : MonoBehaviour
 				//////////////////////
 				void OnCastGun()
 				{
-								// something
+								
 				}
 
 				void OnUpdateGun()
@@ -195,7 +199,8 @@ public class SpellCaster : MonoBehaviour
 								}
 								else
 								{
-												flamethrowerEmitter.Stop();
+												if (flamethrowerEmitter.isPlaying)
+																flamethrowerEmitter.Stop();
 
 												if (!torchEmitter.isPlaying)
 																torchEmitter.Play();
@@ -215,19 +220,39 @@ public class SpellCaster : MonoBehaviour
 				//////////////////////
 				void OnCastLightning()
 				{
-								sparksPrefabInstance = Instantiate(sparksPrefab, origin.position, Quaternion.identity);
+								lightningStrikePrefabInstance = Instantiate(lightningStrikePrefab);
+								lightningStrikeEmitter = lightningStrikePrefabInstance.GetComponent<ParticleSystem>();
 
+								sparksPrefabInstance = Instantiate(sparksPrefab, origin.position, Quaternion.identity);
 								sparksEmitter = sparksPrefabInstance.GetComponent<ParticleSystem>();
+
 								sparksEmitter.Play();
 				}
 
 				void OnUpdateLightning()
 				{
 								sparksPrefabInstance.transform.position = origin.position;
+
+								if (triggerValue > 0.75f)
+								{
+												if (!lightningStrikeEmitter.isPlaying)
+																lightningStrikeEmitter.Play();
+
+												lightningStrikePrefabInstance.transform.position = origin.position;
+												lightningStrikePrefabInstance.transform.rotation = Quaternion.LookRotation(Vector3.up);
+								}
+								else
+								{
+												if (lightningStrikeEmitter.isPlaying)
+																lightningStrikeEmitter.Stop();
+								}
+
+								lightningStrikePrefabInstance.transform.position = origin.position;
 				}
 
 				void OnEndLightning()
 				{
+								Destroy(lightningStrikePrefabInstance);
 								Destroy(sparksPrefabInstance);
 				}
 
@@ -241,7 +266,7 @@ public class SpellCaster : MonoBehaviour
 
 				void OnUpdateEarth()
 				{
-								
+
 				}
 
 				void OnEndEarth()

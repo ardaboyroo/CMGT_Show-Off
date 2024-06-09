@@ -47,6 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   parent: {fileID: 8684505388770350335}
+  pointMaterials:
+  - {fileID: 2100000, guid: ea27c9e9fbe205f4fbd3482d673b330c, type: 2}
+  - {fileID: 2100000, guid: 5cbf681dcb3b2144098cb5496f3dd029, type: 2}
+  - {fileID: 2100000, guid: 20356dd9674f88242b2c8a18f7765e8b, type: 2}
+  - {fileID: 2100000, guid: c221931ad8c6f3741b7f65dc8b5001c1, type: 2}
   points:
   - {fileID: 8315541148556797602}
 --- !u!1 &8315541148556797602

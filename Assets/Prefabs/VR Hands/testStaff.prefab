@@ -90,7 +90,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6324253581705624316}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3258191, y: -0, z: -0, w: 0.9454322}
+  m_LocalRotation: {x: 0.32581562, y: 0, z: 0, w: 0.9454333}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -186,8 +186,9 @@ MonoBehaviour:
     type: 3}
   torchPrefab: {fileID: 9186663881972732162, guid: 4dac116b4bab8d54683da25c2f8430d0,
     type: 3}
-  lightningStrikeParticle: {fileID: 0}
-  sparksParticle: {fileID: 4341653595799609708, guid: 01063be1ea1c5d14bbcf93c2582b0768,
+  lightningStrikePrefab: {fileID: 2767324486375035847, guid: 590bc234588b43f44be18a2f937f85c2,
+    type: 3}
+  sparksPrefab: {fileID: 4341653595799609708, guid: 01063be1ea1c5d14bbcf93c2582b0768,
     type: 3}
 --- !u!1 &8722914204843169830
 GameObject:
@@ -229,7 +230,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8722914204843169830}
-  m_Mesh: {fileID: -8947869220251522264, guid: d0ee96b498bbccf45981c89f4ca11ffb, type: 3}
+  m_Mesh: {fileID: 2839211399044367261, guid: c677e5d5222b4b14a929768a5cc5b5ad, type: 3}
 --- !u!23 &314398109517659850
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -250,7 +251,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5561349426305759274, guid: ab3a79eba4de4be0ad5fead9fb858190, type: 3}
+  - {fileID: 2100000, guid: 40057c2ccbaa0304ca447b8afe1593de, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
