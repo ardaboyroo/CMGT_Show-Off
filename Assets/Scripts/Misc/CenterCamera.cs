@@ -11,11 +11,22 @@ public class CenterCamera : MonoBehaviour
 
     [SerializeField] private InputActionReference centerButton;
 
+    private void Start()
+    {
+        CenterCameraAndPosition();
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (centerButton.action.WasPressedThisFrame())
         {
+            CenterCameraAndPosition();
+        }
+    }
+
+    void CenterCameraAndPosition()
+    {
             Vector3 offset = head.position - XROrigin.position;
             offset.y = 0;
             XROrigin.position = target.position - offset;
@@ -28,6 +39,5 @@ public class CenterCamera : MonoBehaviour
             float angle = Vector3.SignedAngle(cameraForward, targetForward, Vector3.up);
 
             XROrigin.RotateAround(head.position, Vector3.up, angle);
-        }
     }
 }

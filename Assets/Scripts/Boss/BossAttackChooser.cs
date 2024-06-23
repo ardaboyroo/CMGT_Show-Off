@@ -7,61 +7,64 @@ using UnityEngine;
 
 public class BossAttackChooser : MonoBehaviour
 {
-				public static Action<AttackTypes> OnAttack;
+    public static Action<AttackTypes> OnAttack;
 
-				public static Action DoneAttacking;
+    public static Action DoneAttacking;
 
-				private Queue<AttackTypes> bossAttacks = new Queue<AttackTypes>();
-				private System.Random rnd = new();
+    [SerializeField] private float attackInterval = 3f;
 
-				void OnEnable()
-				{
-								DoneAttacking += DoneAttackingEventHandler;
-				}
+    private Queue<AttackTypes> bossAttacks = new Queue<AttackTypes>();
+    private System.Random rnd = new();
 
-				void OnDisable()
-				{
-								DoneAttacking -= DoneAttackingEventHandler;
-				}
+    void OnEnable()
+    {
+        DoneAttacking += DoneAttackingEventHandler;
+    }
 
-				// Start is called before the first frame update
-				void Start()
-				{
-								// Don't do it this way
-								Invoke(nameof(StartNextAttack), 3);
-				}
+    void OnDisable()
+    {
+        DoneAttacking -= DoneAttackingEventHandler;
+    }
 
-				void DoneAttackingEventHandler()
-				{
-								//  0_0
-								Invoke(nameof(StartNextAttack), 3);
-				}
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Don't do it this way
+        Invoke(nameof(StartNextAttack), attackInterval);
+    }
 
-				void EnqueueRandomAttacks()
-				{
-								List<AttackTypes> atks = new List<AttackTypes> { AttackTypes.Hairball, AttackTypes.Slap, AttackTypes.Laser };
-								atks = atks.OrderBy(_ => rnd.Next()).ToList();
+    void DoneAttackingEventHandler()
+    {
+        Invoke(nameof(StartNextAttack), attackInterval);
+    }
 
-								foreach (AttackTypes atk in atks)
-								{
-												bossAttacks.Enqueue(AttackTypes.Cats);
-												bossAttacks.Enqueue(atk);
-								}
-				}
+    void EnqueueRandomAttacks()
+    {
+        List<AttackTypes> atks = new List<AttackTypes> { AttackTypes.Hairball, AttackTypes.Slap, AttackTypes.Laser };
+        
+        // Randomize attacks
+        atks = atks.OrderBy(_ => rnd.Next()).ToList();
 
-				void StartNextAttack()
-				{
-								// Refill queue
-								if (bossAttacks.Count == 0)
-												EnqueueRandomAttacks();
+        foreach (AttackTypes atk in atks)
+        {
+            bossAttacks.Enqueue(AttackTypes.Cats);
+            bossAttacks.Enqueue(atk);
+        }
+    }
 
-								FireOnAttackEvent(bossAttacks.Dequeue());
-				}
+    void StartNextAttack()
+    {
+        // Refill queue
+        if (bossAttacks.Count == 0)
+            EnqueueRandomAttacks();
 
-				void FireOnAttackEvent(AttackTypes atk)
-				{
-								OnAttack?.Invoke(atk);
-				}
+        FireOnAttackEvent(bossAttacks.Dequeue());
+    }
+
+    void FireOnAttackEvent(AttackTypes atk)
+    {
+        OnAttack?.Invoke(atk);
+    }
 
 
 }

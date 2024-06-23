@@ -46,7 +46,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  orbHitClip: {fileID: 8300000, guid: 251d6cf92c76162428e7cdcae3421a1b, type: 3}
+  beginPitch: 1
+  endPitch: 5
+  controller: {fileID: 0}
+  intensity: 0.45
+  duration: 0.07
   parent: {fileID: 8684505388770350335}
+  particle: {fileID: 1280095457453388040, guid: 7e562a50a7b2fda4e81e9360512465a0,
+    type: 3}
   pointMaterials:
   - {fileID: 2100000, guid: ea27c9e9fbe205f4fbd3482d673b330c, type: 2}
   - {fileID: 2100000, guid: 5cbf681dcb3b2144098cb5496f3dd029, type: 2}
@@ -116,7 +124,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: ea27c9e9fbe205f4fbd3482d673b330c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

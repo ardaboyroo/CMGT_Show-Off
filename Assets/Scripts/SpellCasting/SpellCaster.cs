@@ -1,276 +1,356 @@
 using System;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class SpellCaster : MonoBehaviour
 {
-				[SerializeField] private InputActionReference triggerActionReference;
-				[SerializeField] private Transform origin;
-				[SerializeField] private Transform target;
+    [SerializeField] private InputActionReference triggerActionReference;
+    [SerializeField] private Transform origin;
+    [SerializeField] private Transform target;
 
 
-				[Space(15)]
-				[Header("Gun Spell")]
-				[SerializeField] private GameObject bulletPrefab;
-				[SerializeField] private float speed = 1f;
-				[SerializeField] private float lifetime = 5f;
+    [Space(15)]
+    [Header("Gun Spell")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float speed = 1f;
+    [SerializeField] private float lifetime = 5f;
 
 
-				[Space(10)]
-				[Header("Fire Spell")]
-				[SerializeField] private GameObject flamethrowerPrefab;
-				[SerializeField] private GameObject torchPrefab;
+    [Space(10)]
+    [Header("Fire Spell")]
+    [SerializeField] private GameObject flamethrowerPrefab;
+    [SerializeField] private GameObject torchPrefab;
 
 
-				[Space(10)]
-				[Header("Lightning Spell")]
-				[SerializeField] private GameObject lightningStrikePrefab;
-				[SerializeField] private GameObject sparksPrefab;
+    [Space(10)]
+    [Header("Lightning Spell")]
+    [SerializeField] private GameObject lightningStrikePrefab;
+    [SerializeField] private GameObject sparksPrefab;
 
 
-				[Space(10)]
-				[Header("Earth Spell")]
-
-				////////////////////////////////////
-				// Private members
-				////////////////////////////////////
-				private SpellTypes currentSpell = SpellTypes.Gun;
-				private float triggerValue;
+    [Space(10)]
+    [Header("Earth Spell")]
+    [SerializeField] private GameObject boulderPrefab;
+    [SerializeField] private float throwSpeed = 30f;
+    [SerializeField] private float distance = 5f;
+    [SerializeField] private float growSpeed = 2f;
 
 
-				// Gun
-				private bool readyToShoot = true;
+
+    ////////////////////////////////////
+    // Private members
+    ////////////////////////////////////
+    private SpellTypes currentSpell = SpellTypes.Gun;
+    private float triggerValue;
 
 
-				// Fire
-				private GameObject flamethrowerPrefabInstance;
-				private GameObject torchPrefabInstance;
-
-				private ParticleSystem flamethrowerEmitter;
-				private ParticleSystem torchEmitter;
+    // Gun
+    private bool readyToShoot = true;
 
 
-				// Lightning
-				private GameObject lightningStrikePrefabInstance;
-				private GameObject sparksPrefabInstance;
+    // Fire
+    private GameObject flamethrowerPrefabInstance;
+    private GameObject torchPrefabInstance;
 
-				private ParticleSystem lightningStrikeEmitter;
-				private ParticleSystem sparksEmitter;
-
-				private void OnEnable()
-				{
-								CastDetector.OnCast += OnCastEventHandler;
-				}
-
-				private void OnDisable()
-				{
-								CastDetector.OnCast -= OnCastEventHandler;
-				}
-
-				#region EVENT_HANDLERS
-				// Update is called once per frame
-				void Update()
-				{
-								triggerValue = triggerActionReference.action.ReadValue<float>();
-
-								switch (currentSpell)
-								{
-												case SpellTypes.Gun:
-																OnUpdateGun();
-																break;
-
-												case SpellTypes.Fire:
-																OnUpdateFire();
-																break;
-
-												case SpellTypes.Lightning:
-																OnUpdateLightning();
-																break;
-
-												case SpellTypes.Earth:
-																OnUpdateEarth();
-																break;
-								}
-				}
+    private ParticleSystem flamethrowerEmitter;
+    private ParticleSystem torchEmitter;
 
 
-				// Check for new spell
-				void OnCastEventHandler(SpellTypes type)
-				{
-								//if (currentSpell != type) EndAllSpells();
-								EndAllSpells();
+    // Lightning
+    private GameObject lightningStrikePrefabInstance;
+    private GameObject sparksPrefabInstance;
 
-								switch (type)
-								{
-												case SpellTypes.Gun:
-																currentSpell = SpellTypes.Gun;
-																OnCastGun();
-																break;
+    private ParticleSystem lightningStrikeEmitter;
+    private ParticleSystem sparksEmitter;
 
-												case SpellTypes.Fire:
-																currentSpell = SpellTypes.Fire;
-																OnCastFire();
-																break;
 
-												case SpellTypes.Lightning:
-																currentSpell = SpellTypes.Lightning;
-																OnCastLightning();
-																break;
+    // Earth
+    private GameObject boulderPrefabInstance;
+    private Vector3 targetScale;
+    private float growTimer;
+    private Rigidbody boulderRb;
+    private bool thrown = false;
 
-												case SpellTypes.Earth:
-																currentSpell = SpellTypes.Earth;
-																OnCastEarth();
-																break;
-								}
-				}
 
-				void EndAllSpells()
-				{
-								OnEndGun();
-								OnEndFire();
-								OnEndLightning();
-								OnEndEarth();
-				}
-				#endregion
+    private void OnEnable()
+    {
+        CastDetector.OnCast += OnCastEventHandler;
+    }
 
-				//////////////////////
-				// GUN SPELL
-				//////////////////////
-				void OnCastGun()
-				{
-								
-				}
+    private void OnDisable()
+    {
+        CastDetector.OnCast -= OnCastEventHandler;
+    }
 
-				void OnUpdateGun()
-				{
-								if (triggerValue > 0.75f && readyToShoot)
-								{
-												readyToShoot = false;
+    #region EVENT_HANDLERS
+    // Update is called once per frame
+    void Update()
+    {
+        triggerValue = triggerActionReference.action.ReadValue<float>();
 
-												GameObject bullet = Instantiate(bulletPrefab);
-												bullet.transform.position = origin.position;
-												bullet.transform.rotation = Quaternion.LookRotation(target.position - origin.position);
+        switch (currentSpell)
+        {
+            case SpellTypes.Gun:
+                OnUpdateGun();
+                break;
 
-												bullet.GetComponent<MagicMissile>().SetLifeTime(lifetime);
+            case SpellTypes.Fire:
+                OnUpdateFire();
+                break;
 
-												Rigidbody rb = bullet.GetComponent<Rigidbody>();
-												rb.drag = 0;
-												Vector3 direction = target.position - origin.position;
-												rb.AddForce(direction * speed, ForceMode.Impulse);
-								}
-								else if (triggerValue < 0.75f)
-								{
-												readyToShoot = true;
-								}
-				}
+            case SpellTypes.Lightning:
+                OnUpdateLightning();
+                break;
 
-				void OnEndGun()
-				{
+            case SpellTypes.Earth:
+                OnUpdateEarth();
+                break;
+        }
+    }
 
-				}
+    void FixedUpdate()
+    {
+        switch (currentSpell)
+        {
+            case SpellTypes.Earth:
+                OnFixedUpdateEarth();
+                break;
+        }
+    }
 
-				//////////////////////
-				// FIRE SPELL
-				//////////////////////
-				void OnCastFire()
-				{
-								flamethrowerPrefabInstance = Instantiate(flamethrowerPrefab, transform.position, Quaternion.identity);
-								flamethrowerEmitter = flamethrowerPrefabInstance.GetComponent<ParticleSystem>();
 
-								torchPrefabInstance = Instantiate(torchPrefab, transform.position, Quaternion.identity);
-								torchEmitter = torchPrefabInstance.GetComponent<ParticleSystem>();
+    // Check for new spell
+    void OnCastEventHandler(SpellTypes type)
+    {
+        //if (currentSpell != type) EndAllSpells();
+        EndAllSpells();
 
-								torchEmitter.Play();
-				}
+        switch (type)
+        {
+            case SpellTypes.Gun:
+                currentSpell = SpellTypes.Gun;
+                OnCastGun();
+                break;
 
-				void OnUpdateFire()
-				{
-								if (triggerValue > 0.75f)
-								{
-												if (torchEmitter.isPlaying)
-																torchEmitter.Stop();
+            case SpellTypes.Fire:
+                currentSpell = SpellTypes.Fire;
+                OnCastFire();
+                break;
 
-												if (!flamethrowerEmitter.isPlaying)
-																flamethrowerEmitter.Play();
+            case SpellTypes.Lightning:
+                currentSpell = SpellTypes.Lightning;
+                OnCastLightning();
+                break;
 
-												// Move and rotate the particle
-												flamethrowerPrefabInstance.transform.position = origin.position;
-												flamethrowerPrefabInstance.transform.rotation = Quaternion.LookRotation(target.position - origin.position);
-								}
-								else
-								{
-												if (flamethrowerEmitter.isPlaying)
-																flamethrowerEmitter.Stop();
+            case SpellTypes.Earth:
+                currentSpell = SpellTypes.Earth;
+                OnCastEarth();
+                break;
+        }
+    }
 
-												if (!torchEmitter.isPlaying)
-																torchEmitter.Play();
+    void EndAllSpells()
+    {
+        OnEndGun();
+        OnEndFire();
+        OnEndLightning();
+        OnEndEarth();
+    }
+    #endregion
 
-												torchPrefabInstance.transform.position = target.position;
-								}
-				}
+    //////////////////////
+    // GUN SPELL
+    //////////////////////
+    void OnCastGun()
+    {
 
-				void OnEndFire()
-				{
-								Destroy(flamethrowerPrefabInstance);
-								Destroy(torchPrefabInstance);
-				}
+    }
 
-				//////////////////////
-				// LIGHTNING SPELL
-				//////////////////////
-				void OnCastLightning()
-				{
-								lightningStrikePrefabInstance = Instantiate(lightningStrikePrefab);
-								lightningStrikeEmitter = lightningStrikePrefabInstance.GetComponent<ParticleSystem>();
+    void OnUpdateGun()
+    {
+        if (triggerValue > 0.75f && readyToShoot)
+        {
+            readyToShoot = false;
 
-								sparksPrefabInstance = Instantiate(sparksPrefab, origin.position, Quaternion.identity);
-								sparksEmitter = sparksPrefabInstance.GetComponent<ParticleSystem>();
+            GameObject bullet = Instantiate(bulletPrefab);
+            bullet.transform.position = origin.position;
+            bullet.transform.rotation = Quaternion.LookRotation(target.position - origin.position);
 
-								sparksEmitter.Play();
-				}
+            bullet.GetComponent<MagicMissile>().SetLifeTime(lifetime);
 
-				void OnUpdateLightning()
-				{
-								sparksPrefabInstance.transform.position = origin.position;
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            rb.drag = 0;
+            Vector3 direction = target.position - origin.position;
+            rb.AddForce(direction * speed, ForceMode.Impulse);
+        }
+        else if (triggerValue < 0.75f)
+        {
+            readyToShoot = true;
+        }
+    }
 
-								if (triggerValue > 0.75f)
-								{
-												if (!lightningStrikeEmitter.isPlaying)
-																lightningStrikeEmitter.Play();
+    void OnEndGun()
+    {
 
-												lightningStrikePrefabInstance.transform.position = origin.position;
-												lightningStrikePrefabInstance.transform.rotation = Quaternion.LookRotation(Vector3.up);
-								}
-								else
-								{
-												if (lightningStrikeEmitter.isPlaying)
-																lightningStrikeEmitter.Stop();
-								}
+    }
 
-								lightningStrikePrefabInstance.transform.position = origin.position;
-				}
+    //////////////////////
+    // FIRE SPELL
+    //////////////////////
+    void OnCastFire()
+    {
+        flamethrowerPrefabInstance = Instantiate(flamethrowerPrefab, transform.position, Quaternion.identity);
+        flamethrowerEmitter = flamethrowerPrefabInstance.GetComponent<ParticleSystem>();
 
-				void OnEndLightning()
-				{
-								Destroy(lightningStrikePrefabInstance);
-								Destroy(sparksPrefabInstance);
-				}
+        torchPrefabInstance = Instantiate(torchPrefab, transform.position, Quaternion.identity);
+        torchEmitter = torchPrefabInstance.GetComponent<ParticleSystem>();
 
-				//////////////////////
-				// EARTH SPELL
-				//////////////////////
-				void OnCastEarth()
-				{
-								// something
-				}
+        torchEmitter.Play();
+    }
 
-				void OnUpdateEarth()
-				{
+    void OnUpdateFire()
+    {
+        if (triggerValue > 0.75f)
+        {
+            if (torchEmitter.isPlaying)
+                torchEmitter.Stop();
 
-				}
+            if (!flamethrowerEmitter.isPlaying)
+                flamethrowerEmitter.Play();
 
-				void OnEndEarth()
-				{
+            // Move and rotate the particle
+            flamethrowerPrefabInstance.transform.position = origin.position;
+            flamethrowerPrefabInstance.transform.rotation = Quaternion.LookRotation(target.position - origin.position);
+        }
+        else
+        {
+            if (flamethrowerEmitter.isPlaying)
+                flamethrowerEmitter.Stop();
 
-				}
+            if (!torchEmitter.isPlaying)
+                torchEmitter.Play();
+
+            torchPrefabInstance.transform.position = origin.position;
+        }
+    }
+
+    void OnEndFire()
+    {
+        Destroy(flamethrowerPrefabInstance);
+        Destroy(torchPrefabInstance);
+    }
+
+    //////////////////////
+    // LIGHTNING SPELL
+    //////////////////////
+    void OnCastLightning()
+    {
+        lightningStrikePrefabInstance = Instantiate(lightningStrikePrefab);
+        lightningStrikeEmitter = lightningStrikePrefabInstance.GetComponent<ParticleSystem>();
+
+        sparksPrefabInstance = Instantiate(sparksPrefab, origin.position, Quaternion.identity);
+        sparksEmitter = sparksPrefabInstance.GetComponent<ParticleSystem>();
+
+        sparksEmitter.Play();
+    }
+
+    void OnUpdateLightning()
+    {
+        sparksPrefabInstance.transform.position = origin.position;
+
+        if (triggerValue > 0.75f)
+        {
+            lightningStrikePrefabInstance.transform.position = origin.position;
+            lightningStrikePrefabInstance.transform.rotation = Quaternion.LookRotation(target.position - origin.position);
+
+            if (!lightningStrikeEmitter.isPlaying)
+                lightningStrikeEmitter.Play();
+        }
+        else
+        {
+            if (lightningStrikeEmitter.isPlaying)
+                lightningStrikeEmitter.Stop();
+        }
+
+        //lightningStrikePrefabInstance.transform.position = origin.position;
+    }
+
+    void OnEndLightning()
+    {
+        Destroy(lightningStrikePrefabInstance);
+        Destroy(sparksPrefabInstance);
+    }
+
+    //////////////////////
+    // EARTH SPELL
+    //////////////////////
+    void OnCastEarth()
+    {
+        // Ssshhhhhht...
+        boulderPrefabInstance = Instantiate(boulderPrefab, new Vector3(0, 40, 5), Quaternion.identity);
+
+        targetScale = boulderPrefabInstance.transform.localScale;
+        boulderPrefabInstance.transform.localScale = Vector3.zero;
+        boulderPrefabInstance.transform.position = (target.position - origin.position).normalized * distance + origin.position;
+
+        growTimer = 0;
+
+        boulderRb = boulderPrefabInstance.GetComponent<Rigidbody>();
+
+        thrown = false;
+    }
+
+    void OnUpdateEarth()
+    {
+        if (triggerValue > 0.75f && !thrown)
+        {
+            if (growTimer < growSpeed || boulderPrefabInstance.transform.localScale != targetScale)
+            {
+                growTimer += Time.deltaTime;
+                boulderPrefabInstance.transform.localScale = Vector3.Lerp(Vector3.zero, targetScale, growTimer / growSpeed);
+            }
+        }
+        else if (growTimer / growSpeed > 0.7f)
+        {
+            if (!thrown)
+            {
+                thrown = true;
+
+                Vector3 direction = target.position - origin.position;
+
+                boulderRb.velocity = Vector3.zero;
+                boulderRb.drag = 0;
+                boulderRb.useGravity = true;
+                boulderRb.AddForce(direction.normalized * throwSpeed, ForceMode.Impulse);
+                boulderRb.angularDrag = 0;
+                boulderRb.AddTorque(direction.normalized * 250f);
+
+                boulderPrefabInstance = null;
+                boulderRb = null;
+            }
+        }
+    }
+
+    void OnFixedUpdateEarth()
+    {
+        // Update position
+        if (triggerValue > 0.75f && !thrown)
+        {
+            Vector3 targetPos = (target.position - origin.position).normalized * distance + origin.position;
+            Vector3 boulderPos = boulderPrefabInstance.transform.position;
+
+            Vector3 direction = targetPos - boulderPos;
+
+            if (direction.magnitude > 0.1f)
+            {
+                boulderRb.AddForce(direction.normalized * (2f + (direction.magnitude / 2)), ForceMode.Force);
+            }
+        }
+    }
+
+    void OnEndEarth()
+    {
+        Destroy(boulderPrefabInstance);
+    }
 }

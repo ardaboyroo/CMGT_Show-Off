@@ -5,116 +5,155 @@ using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class CastDetector : MonoBehaviour
 {
-				public static Action<SpellTypes> OnCast;
+    public static Action<SpellTypes> OnCast;
 
-				[SerializeField] private SpellTypes type;
-				[SerializeField] private GameObject parent;
-				[SerializeField] private List<Material> pointMaterials;
+    [SerializeField] private SpellTypes type;
 
-				[Space(10)]
-				[SerializeField] private List<GameObject> points;
+    [Space(10)]
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip orbHitClip;
+    [SerializeField] private float beginPitch;
+    [SerializeField] private float endPitch;
 
-				private int currentPoint;
-				private static SpellTypes? previousCasted = null;
+    [Header("Haptic Feedback Settings")]
+    [SerializeField] private XRBaseController controller;
+    [Range(0, 1)]
+    [SerializeField] private float intensity;
+    [SerializeField] private float duration;
 
-				private void OnEnable()
-				{
-								SpellSelector.SpellSelected += SpellSelectedEventHandler;
-								StaffOrbDetector.OnCollision += StaffOnCollisionEventHandler;
-				}
+    [Space(10)]
+    [SerializeField] private GameObject parent;
+    [SerializeField] private GameObject particle;
+    [SerializeField] private List<Material> pointMaterials;
 
-				private void OnDisable()
-				{
-								SpellSelector.SpellSelected -= SpellSelectedEventHandler;
-								StaffOrbDetector.OnCollision -= StaffOnCollisionEventHandler;
-				}
+    [Space(10)]
+    [SerializeField] private List<GameObject> points;
 
-				void SpellSelectedEventHandler(SpellTypes selectedSpell)
-				{
-								if (selectedSpell == type)
-								{
-												if (points.Count == 0) FireOnCastEvent(type);
-												parent.SetActive(true);
+    private int currentPoint;
 
-												UpdateAllPointMaterials();
-								}
-								else
-								{
-												parent.SetActive(false);
+    private void OnEnable()
+    {
+        SpellSelector.SpellSelected += SpellSelectedEventHandler;
+        StaffOrbDetector.OnCollision += StaffOnCollisionEventHandler;
+    }
 
-												currentPoint = 0;
-												foreach (GameObject obj in points)
-												{
-																obj.SetActive(true);
-												}
-								}
-				}
+    private void OnDisable()
+    {
+        SpellSelector.SpellSelected -= SpellSelectedEventHandler;
+        StaffOrbDetector.OnCollision -= StaffOnCollisionEventHandler;
+    }
 
-				void StaffOnCollisionEventHandler(List<GameObject> other)
-				{
-								if (points.Count > 0 && currentPoint < points.Count)
-								{
-												foreach (GameObject point in other.ToArray())
-												{
-																if (point == points[currentPoint])
-																{
-																				currentPoint++;
-																				point.SetActive(false);
-																				UpdateAllPointMaterials();
-																				other.Remove(point);
+    void SpellSelectedEventHandler(SpellTypes selectedSpell)
+    {
+        if (selectedSpell == type)
+        {
+            if (points.Count == 0) FireOnCastEvent(type);
+            parent.SetActive(true);
 
-																				if (currentPoint < points.Count)
-																				{
-																								StaffOnCollisionEventHandler(other);
-																				}
-																				else
-																				{
-																								//previousCasted = type;
-																								FireOnCastEvent(type);
-																				}
-																}
-												}
-								}
+            UpdateAllPointMaterials();
+        }
+        else
+        {
+            parent.SetActive(false);
 
-								/*if (points.Count > 0)
-								{
-												if (other == points[currentPoint])
-												{
-																other.gameObject.SetActive(false);
-																if (currentPoint < points.Count - 1)
-																{
-																				currentPoint++;
-																				UpdateAllPointMaterials();
-																}
-																else
-																{
-																				FireOnCastEvent(type);
-																}
-												}
-								}*/
-				}
+            currentPoint = 0;
+            foreach (GameObject obj in points)
+            {
+                obj.SetActive(true);
+            }
+        }
+    }
 
-				void FireOnCastEvent(SpellTypes type)
-				{
-								OnCast?.Invoke(type);
-				}
+    void StaffOnCollisionEventHandler(List<GameObject> other)
+    {
+        if (points.Count > 0 && currentPoint < points.Count)
+        {
+            foreach (GameObject point in other.ToArray())
+            {
+                if (point == points[currentPoint])
+                {
+                    CreateAndPlayAudio();
+                    currentPoint++;
+                    point.SetActive(false);
+                    Instantiate(particle, point.transform.position, Quaternion.identity);
+                    UpdateAllPointMaterials();
+                    TriggerHaptic();
+                    other.Remove(point);
 
-				void UpdateAllPointMaterials()
-				{
-								for (int i = 0; i + currentPoint < points.Count; i++)
-								{
-												MeshRenderer mr = points[i + currentPoint].GetComponent<MeshRenderer>();
-												if (i < pointMaterials.Count)
-												{
-																mr.material = pointMaterials[i];
-												}
-												else
-												{
-																mr.material = pointMaterials.Last();
-												}
-								}
-				}
+                    if (currentPoint < points.Count)
+                    {
+                        // Recursive
+                        StaffOnCollisionEventHandler(other);
+                    }
+                    else
+                    {
+                        FireOnCastEvent(type);
+                    }
+                }
+            }
+        }
+
+        /*if (points.Count > 0)
+        {
+            if (other == points[currentPoint])
+            {
+                other.gameObject.SetActive(false);
+                if (currentPoint < points.Count - 1)
+                {
+                    currentPoint++;
+                    UpdateAllPointMaterials();
+                }
+                else
+                {
+                    FireOnCastEvent(type);
+                }
+            }
+        }*/
+    }
+
+    void FireOnCastEvent(SpellTypes type)
+    {
+        OnCast?.Invoke(type);
+    }
+
+    void UpdateAllPointMaterials()
+    {
+        for (int i = 0; i + currentPoint < points.Count; i++)
+        {
+            MeshRenderer mr = points[i + currentPoint].GetComponent<MeshRenderer>();
+            if (i < pointMaterials.Count)
+            {
+                mr.material = pointMaterials[i];
+            }
+            else
+            {
+                mr.material = pointMaterials.Last();
+            }
+        }
+    }
+
+    void CreateAndPlayAudio()
+    {
+        GameObject obj = new GameObject("Orb Hit SFX");
+        AudioSource src = obj.AddComponent<AudioSource>();
+
+        src.clip = orbHitClip;
+        src.loop = false;
+        src.spatialBlend = 1f;
+        src.volume = 2f;
+        src.pitch = Mathf.Lerp(beginPitch, endPitch, (float)(currentPoint) / (float)(points.Count - 1));
+        src.Play();
+
+        Destroy(obj, orbHitClip.length + 1f);
+    }
+
+    void TriggerHaptic()
+    {
+        if (intensity > 0)
+            controller.SendHapticImpulse(intensity, duration);
+    }
 }

@@ -1,150 +1,218 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BossAttacker : MonoBehaviour
 {
-				private AttackTypes currentAttack;
+    [SerializeField] private Transform target;
 
-				void OnEnable()
-				{
-								BossAttackChooser.OnAttack += OnAttackEventHandler;
-				}
+    public static Action OnCatDeath;
 
-				void OnDisable()
-				{
-								BossAttackChooser.OnAttack -= OnAttackEventHandler;
-				}
+    [Space(15)]
+    [Header("Cats Attack")]
+    [SerializeField] private GameObject catPrefab;
+    [SerializeField] private float spawnTimeInterval = 1f;
+    [SerializeField] private int spawnAmount = 3;
+    [SerializeField] private float catSpeed = 3f;
+    [SerializeField] private float rotateSpeed = 360f;
+    [SerializeField] private List<Path> paths;
 
-				#region EVENT_HANDLERS
-				void Update()
-				{
-								switch (currentAttack)
-								{
-												case AttackTypes.Cats:
-																OnUpdateCats();
-																break;
 
-												case AttackTypes.Hairball:
-																OnUpdateHairball();
-																break;
+    ////////////////////////////////////
+    // Private members
+    ////////////////////////////////////
+    private AttackTypes currentAttack;
 
-												case AttackTypes.Slap:
-																OnUpdateSlap();
-																break;
 
-												case AttackTypes.Laser:
-																OnUpdateLaser();
-																break;
-								}
-				}
+    // Cats
+    private int currentCatAmount;
 
-				void OnAttackEventHandler(AttackTypes atk)
-				{
-								if (currentAttack != atk) EndAllAttacks();
 
-								switch (atk)
-								{
-												case AttackTypes.Cats:
-																currentAttack = AttackTypes.Cats;
-																OnAttackCats();
-																break;
 
-												case AttackTypes.Hairball:
-																currentAttack = AttackTypes.Hairball;
-																OnAttackHairball();
-																break;
+    void OnEnable()
+    {
+        BossAttackChooser.OnAttack += OnAttackEventHandler;
+        OnCatDeath += OnCatDeathEventHandler;
+    }
 
-												case AttackTypes.Slap:
-																currentAttack = AttackTypes.Slap;
-																OnAttackSlap();
-																break;
+    void OnDisable()
+    {
+        BossAttackChooser.OnAttack -= OnAttackEventHandler;
+        OnCatDeath -= OnCatDeathEventHandler;
+    }
 
-												case AttackTypes.Laser:
-																currentAttack = AttackTypes.Laser;
-																OnAttackLaser();
-																break;
-								}
-				}
+    #region EVENT_HANDLERS
+    void Update()
+    {
+        switch (currentAttack)
+        {
+            case AttackTypes.Cats:
+                OnUpdateCats();
+                break;
 
-				void EndAllAttacks()
-				{
-								OnEndCats();
-								OnEndHairball();
-								OnEndSlap();
-								OnEndLaser();
-				}
-				#endregion
+            case AttackTypes.Hairball:
+                OnUpdateHairball();
+                break;
 
-				//////////////////////
-				// CATS ATTACK
-				//////////////////////
-				void OnAttackCats()
-				{
-								
-				}
+            case AttackTypes.Slap:
+                OnUpdateSlap();
+                break;
 
-				void OnUpdateCats()
-				{
-								
-				}
+            case AttackTypes.Laser:
+                OnUpdateLaser();
+                break;
+        }
+    }
 
-				void OnEndCats()
-				{
+    void OnAttackEventHandler(AttackTypes atk)
+    {
+        if (currentAttack != atk) EndAllAttacks();
 
-				}
+        switch (atk)
+        {
+            case AttackTypes.Cats:
+                currentAttack = AttackTypes.Cats;
+                OnAttackCats();
+                break;
 
-				//////////////////////
-				// HAIRBALL ATTACK
-				//////////////////////
-				void OnAttackHairball()
-				{
-								
-				}
+            case AttackTypes.Hairball:
+                currentAttack = AttackTypes.Hairball;
+                OnAttackHairball();
+                break;
 
-				void OnUpdateHairball()
-				{
-								
-				}
+            case AttackTypes.Slap:
+                currentAttack = AttackTypes.Slap;
+                OnAttackSlap();
+                break;
 
-				void OnEndHairball()
-				{
+            case AttackTypes.Laser:
+                currentAttack = AttackTypes.Laser;
+                OnAttackLaser();
+                break;
+        }
+    }
 
-				}
+    void EndAllAttacks()
+    {
+        OnEndCats();
+        OnEndHairball();
+        OnEndSlap();
+        OnEndLaser();
+    }
+    #endregion
 
-				//////////////////////
-				// SLAP ATTACK
-				//////////////////////
-				void OnAttackSlap()
-				{
-								
-				}
+    void DoneAttacking()
+    {
+        BossAttackChooser.DoneAttacking?.Invoke();
+    }
 
-				void OnUpdateSlap()
-				{
-								
-				}
+    //////////////////////
+    // CATS ATTACK
+    //////////////////////
+    void OnAttackCats()
+    {
+        StartCoroutine(CatSpawner());
+    }
 
-				void OnEndSlap()
-				{
+    IEnumerator CatSpawner()
+    {
+        // while loop will keep spawning enemies (for testing)
+        //while (true)
+        {
+            for (int i = 0; i < spawnAmount; i++)
+            {
+                GameObject cat = Instantiate(catPrefab, paths[0].points[0].position, Quaternion.identity);
+                currentCatAmount += 1;
 
-				}
+                Rigidbody rb = cat.AddComponent<Rigidbody>();
+                rb.useGravity = false;
 
-				//////////////////////
-				// LASER ATTACK
-				//////////////////////
-				void OnAttackLaser()
-				{
-								
-				}
+                CatController mb = cat.AddComponent<CatController>();
+                mb.speed = catSpeed;
+                mb.path = paths[0];
+                mb.rotateSpeed = rotateSpeed;
+                yield return new WaitForSeconds(spawnTimeInterval);
+            }
 
-				void OnUpdateLaser()
-				{
-								
-				}
+            //yield return new WaitForSeconds(5f);
+        }
+    }
 
-				void OnEndLaser()
-				{
+    void OnCatDeathEventHandler()
+    {
+        if (currentCatAmount - 1 > 0)
+        {
+            currentCatAmount -= 1;
+        }
+        else
+        {
+            currentCatAmount = 0;
+            DoneAttacking();
+        }
+    }
 
-				}
+    void OnUpdateCats()
+    {
+
+    }
+
+    void OnEndCats()
+    {
+
+    }
+
+    //////////////////////
+    // HAIRBALL ATTACK
+    //////////////////////
+    void OnAttackHairball()
+    {
+        DoneAttacking();
+    }
+
+    void OnUpdateHairball()
+    {
+
+    }
+
+    void OnEndHairball()
+    {
+
+    }
+
+    //////////////////////
+    // SLAP ATTACK
+    //////////////////////
+    void OnAttackSlap()
+    {
+        DoneAttacking();
+    }
+
+    void OnUpdateSlap()
+    {
+
+    }
+
+    void OnEndSlap()
+    {
+
+    }
+
+    //////////////////////
+    // LASER ATTACK
+    //////////////////////
+    void OnAttackLaser()
+    {
+        DoneAttacking();
+    }
+
+    void OnUpdateLaser()
+    {
+
+    }
+
+    void OnEndLaser()
+    {
+
+    }
 }

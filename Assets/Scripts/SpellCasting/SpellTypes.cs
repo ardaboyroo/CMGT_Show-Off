@@ -1,7 +1,7 @@
 public enum SpellTypes
 {
-				Gun,
-				Fire,
-				Lightning,
-				Earth
+    Gun,
+    Fire,
+    Lightning,
+    Earth
 }

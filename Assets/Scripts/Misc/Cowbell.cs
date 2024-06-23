@@ -4,25 +4,15 @@ using UnityEngine;
 
 public class Cowbell : MonoBehaviour
 {
-				private AudioSource _audioSource;
-				private ParticleSystem _pSystem;
+    private AudioSource _audioSource;
 
-				private void Start()
-				{
-								_audioSource = GetComponent<AudioSource>();
-								_pSystem = GetComponentInChildren<ParticleSystem>();
-				}
+    private void Start()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
 
-				private void OnTriggerEnter(Collider collision)
-				{
-								_audioSource.Play();
-								if (_pSystem != null)
-								{
-												_pSystem.Play();
-								}
-								else
-								{
-												Debug.Log("PARTICLE SYSTEM NOT FOUND");
-								}
-				}
+    private void OnTriggerEnter(Collider collision)
+    {
+        _audioSource.Play();
+    }
 }

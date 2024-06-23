@@ -1,7 +1,7 @@
 public enum AttackTypes
 {
-				Cats,
-				Hairball,
-				Slap,
-				Laser
+    Cats,
+    Hairball,
+    Slap,
+    Laser
 }
