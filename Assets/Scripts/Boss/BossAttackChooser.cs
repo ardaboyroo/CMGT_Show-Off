@@ -11,6 +11,9 @@ public class BossAttackChooser : MonoBehaviour
 
     public static Action DoneAttacking;
 
+    [SerializeField] private bool useTestingAttack = false;
+    [SerializeField] private AttackTypes testingAttack;
+
     [SerializeField] private float attackInterval = 3f;
 
     private Queue<AttackTypes> bossAttacks = new Queue<AttackTypes>();
@@ -30,6 +33,8 @@ public class BossAttackChooser : MonoBehaviour
     void Start()
     {
         // Don't do it this way
+        // ...
+        // Too bad, this is the way
         Invoke(nameof(StartNextAttack), attackInterval);
     }
 
@@ -58,7 +63,10 @@ public class BossAttackChooser : MonoBehaviour
         if (bossAttacks.Count == 0)
             EnqueueRandomAttacks();
 
-        FireOnAttackEvent(bossAttacks.Dequeue());
+        if (!useTestingAttack)
+            FireOnAttackEvent(bossAttacks.Dequeue());
+        else
+            FireOnAttackEvent(testingAttack);
     }
 
     void FireOnAttackEvent(AttackTypes atk)

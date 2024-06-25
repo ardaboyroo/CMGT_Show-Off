@@ -1,36 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
-public class CatController : MonoBehaviour
+public class HairballController : MonoBehaviour
 {
+    [Tooltip("The amount of seconds the player has to ignite it in order to destroy it")]
+    public float healthTimer;
+    private float totalHealthTimer;
+
     public Path path;
     public Vector3 target;
     public float speed;
 
-    public float rotateSpeed;
-
     private Rigidbody rb;
-    private float yRotation = 0;
 
     private int currentPathPoint = 0;
+
+    private SpellTypes currentSpell;
+
+    private Material material;
+
+    private void OnEnable()
+    {
+        CastDetector.OnCast += SetCurrentSpell;
+    }
+
+    private void OnDisable()
+    {
+        CastDetector.OnCast -= SetCurrentSpell;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         target = GetTarget(currentPathPoint);
+        material = GetComponent<MeshRenderer>().material;
+        totalHealthTimer = healthTimer;
     }
 
     void Update()
     {
-        // Rotate the cat around its local Y axis
-        transform.LookAt(transform.position + rb.velocity.normalized);
-        transform.RotateAround(transform.position, transform.right, 90);
-        transform.RotateAround(transform.position, transform.up, yRotation);
-
-        yRotation += Time.deltaTime * rotateSpeed;
-
         // TODO: Don't use a hardcoded value
         if (Vector3.Distance(transform.position, target) < 2f)
         {
@@ -45,6 +56,11 @@ public class CatController : MonoBehaviour
         }
     }
 
+    void SetCurrentSpell(SpellTypes type)
+    {
+        currentSpell = type;
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -55,12 +71,17 @@ public class CatController : MonoBehaviour
             rb.velocity = rb.velocity.normalized * speed;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.GetComponent<MagicMissile>() != null)
+        if (currentSpell == SpellTypes.Fire)
         {
-            Destroy(other.gameObject);
-            DestroySelf();
+            healthTimer -= Time.deltaTime;
+            material.SetFloat("_Dissolve_Amount", 1 - (healthTimer / totalHealthTimer));
+
+            if (healthTimer < 0)
+            {
+                DestroySelf();
+            }
         }
     }
 
@@ -73,13 +94,12 @@ public class CatController : MonoBehaviour
     {
         DestroySelf();
         DamagePlayer();
-        // Do some other fancy stuff here
     }
 
     void DestroySelf()
     {
         Destroy(gameObject);
-        BossAttacker.OnCatDeath?.Invoke();
+        BossAttacker.OnHairballDestroyed?.Invoke();
     }
 
     void DamagePlayer()

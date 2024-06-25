@@ -21,6 +21,7 @@ public class SpellCaster : MonoBehaviour
     [Header("Fire Spell")]
     [SerializeField] private GameObject flamethrowerPrefab;
     [SerializeField] private GameObject torchPrefab;
+    [SerializeField] private Collider fireCollider;
 
 
     [Space(10)]
@@ -207,6 +208,8 @@ public class SpellCaster : MonoBehaviour
         torchEmitter = torchPrefabInstance.GetComponent<ParticleSystem>();
 
         torchEmitter.Play();
+
+        fireCollider.enabled = false;
     }
 
     void OnUpdateFire()
@@ -218,6 +221,8 @@ public class SpellCaster : MonoBehaviour
 
             if (!flamethrowerEmitter.isPlaying)
                 flamethrowerEmitter.Play();
+
+            fireCollider.enabled = true;
 
             // Move and rotate the particle
             flamethrowerPrefabInstance.transform.position = origin.position;
@@ -231,12 +236,15 @@ public class SpellCaster : MonoBehaviour
             if (!torchEmitter.isPlaying)
                 torchEmitter.Play();
 
+            fireCollider.enabled = false;
+
             torchPrefabInstance.transform.position = origin.position;
         }
     }
 
     void OnEndFire()
     {
+        fireCollider.enabled = false;
         Destroy(flamethrowerPrefabInstance);
         Destroy(torchPrefabInstance);
     }
@@ -288,7 +296,7 @@ public class SpellCaster : MonoBehaviour
     void OnCastEarth()
     {
         // Ssshhhhhht...
-        boulderPrefabInstance = Instantiate(boulderPrefab, new Vector3(0, 40, 5), Quaternion.identity);
+        boulderPrefabInstance = Instantiate(boulderPrefab);
 
         targetScale = boulderPrefabInstance.transform.localScale;
         boulderPrefabInstance.transform.localScale = Vector3.zero;

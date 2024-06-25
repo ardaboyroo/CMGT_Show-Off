@@ -856,6 +856,7 @@ GameObject:
   - component: {fileID: 2094088334267389122}
   - component: {fileID: 2095342142921627869}
   - component: {fileID: 2433651960956672960}
+  - component: {fileID: 679223014168735289}
   m_Layer: 0
   m_Name: testStaff
   m_TagString: Untagged
@@ -968,6 +969,7 @@ MonoBehaviour:
     type: 3}
   torchPrefab: {fileID: 9186663881972732162, guid: 4dac116b4bab8d54683da25c2f8430d0,
     type: 3}
+  fireCollider: {fileID: 679223014168735289}
   lightningStrikePrefab: {fileID: 2767324486375035847, guid: 590bc234588b43f44be18a2f937f85c2,
     type: 3}
   sparksPrefab: {fileID: 4341653595799609708, guid: 01063be1ea1c5d14bbcf93c2582b0768,
@@ -977,6 +979,27 @@ MonoBehaviour:
   throwSpeed: 30
   distance: 15
   growSpeed: 2
+--- !u!65 &679223014168735289
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6324253581705624316}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 19.88638, y: 105.14407, z: 127.37623}
+  m_Center: {x: 0.72040176, y: 52.071793, z: 63.18813}
 --- !u!1 &6399924499214551344
 GameObject:
   m_ObjectHideFlags: 0
@@ -1269,10 +1292,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e310d8a00921e042988cae83dd20a61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseMaterial: {fileID: 2100000, guid: 3504b59cf029eea4fbdf1565be716900, type: 2}
+  baseMaterial: {fileID: 2100000, guid: 40057c2ccbaa0304ca447b8afe1593de, type: 2}
   fireMaterial: {fileID: 2100000, guid: a99b540c4409b634dba6b3fb3e2d83f3, type: 2}
-  lightningMaterial: {fileID: 2100000, guid: 541962392a92a9347bbb0c8cf758b811, type: 2}
-  earthMaterial: {fileID: 2100000, guid: 40057c2ccbaa0304ca447b8afe1593de, type: 2}
+  lightningMaterial: {fileID: 2100000, guid: 3504b59cf029eea4fbdf1565be716900, type: 2}
+  earthMaterial: {fileID: 2100000, guid: 541962392a92a9347bbb0c8cf758b811, type: 2}
 --- !u!1 &8818228041428568214
 GameObject:
   m_ObjectHideFlags: 0

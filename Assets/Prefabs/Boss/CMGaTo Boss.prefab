@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &780290694939123653
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7130657915680640530}
+  m_Layer: 0
+  m_Name: RightEye
+  m_TagString: Untagged
+  m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7130657915680640530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780290694939123653}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0187, y: 0.0323, z: 0.0809}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7172449936944109220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2273847701625890632
 GameObject:
   m_ObjectHideFlags: 0
@@ -83,6 +114,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4986067797818966119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1727436256069184632}
+  m_Layer: 0
+  m_Name: LeftEye
+  m_TagString: Untagged
+  m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1727436256069184632
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4986067797818966119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0172, y: 0.0327, z: 0.0816}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7172449936944109220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6582444139605756037
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,13 +171,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6582444139605756037}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.0000029504295}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 6.2, y: 50.2, z: 211.65}
-  m_LocalScale: {x: 1000, y: 1000, z: 1000}
+  m_LocalScale: {x: 1996.267, y: 1996.267, z: 1996.267}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7372883318453265032}
   - {fileID: 3472288377490311053}
+  - {fileID: 1727436256069184632}
+  - {fileID: 7130657915680640530}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &-3410304583896832115
@@ -130,6 +194,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9d0130d6a283c4d89e79cd1623035e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useTestingAttack: 1
+  testingAttack: 3
+  attackInterval: 3
 --- !u!114 &-5308357132641323407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,11 +210,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  catPrefab: {fileID: 0}
-  spawnPoint: {fileID: 0}
+  catPrefab: {fileID: 2933927435295065868, guid: c4d06334a240b57498e20efd63829242,
+    type: 3}
   spawnTimeInterval: 3
-  spawnAmount: 3
-  catSpeed: 3
+  spawnAmount: 1
+  catSpeed: 20
+  rotateSpeed: 180
+  catPaths:
+  - {fileID: 0}
+  - {fileID: 0}
+  hairballPrefab: {fileID: 7230193436292068272, guid: 6c1eb93333023174e8bcb0646b2fc222,
+    type: 3}
+  hairballSpeed: 30
+  hairballPath: {fileID: 0}
+  timeToDestroy: 1.5
+  growSpeed: 1
+  laserPrefab: {fileID: 2833898959728001497, guid: ffb6f393c1495d649972524e513a3fd7,
+    type: 3}
+  leftEye: {fileID: 1727436256069184632}
+  rightEye: {fileID: 7130657915680640530}
+  timeTillDamage: 5
+  totalAttackTime: 5
+  earthMeltedMaterial: {fileID: 2100000, guid: 09a1176f2912d7d40918946679984529, type: 2}
 --- !u!1 &8308456511248492129
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,7 +293,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 6034957751646507721, guid: a06f993835663764aad61fb7438c07d3, type: 3}
+  - {fileID: 5561349426305759274, guid: ef2d711491e944746a9f9e1bf000631f, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
