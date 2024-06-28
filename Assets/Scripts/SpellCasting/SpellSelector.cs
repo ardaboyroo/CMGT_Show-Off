@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,8 +10,14 @@ public class SpellSelector : MonoBehaviour
 {
     public static Action<SpellTypes> SpellSelected;
 
+    [SerializeField] private Material magicMissile;
+    [SerializeField] private Material Fire;
+    [SerializeField] private Material Lightning;
+    [SerializeField] private Material Earth;
+
     [SerializeField] private InputActionReference moveActionReference;
     [SerializeField] private GameObject book;
+    private MeshRenderer bookMR;
 
     private SpellTypes selectedSpell = SpellTypes.Fire;
     private Vector2 joystickAxisValue;
@@ -21,6 +28,7 @@ public class SpellSelector : MonoBehaviour
     void Start()
     {
         ChangeHandColour(false);
+        bookMR = book.GetComponent<MeshRenderer>(); // Return null for some fucking reason
     }
 
     // Update is called once per frame
@@ -70,28 +78,44 @@ public class SpellSelector : MonoBehaviour
             }
         }
 
-        book.GetComponent<MeshRenderer>().material.color = GetSpellColour(selectedSpell);
+        SetBookMaterial(selectedSpell);
         FireSpellSelectedEvent();
     }
 
-    Color GetSpellColour(SpellTypes type)
+    void SetBookMaterial(SpellTypes type)
     {
+        // This makes no sense, with this GetComponent bookMR is null even though it should be initialized in Start()
+        bookMR = book.GetComponent<MeshRenderer>();
+
         switch (type)
         {
             case SpellTypes.Gun:
-                return new Color(0.1f, 0.1f, 1f);
+                if (bookMR.material == null)
+                {
+                    Debug.Log("bruh");
+                }
+                if (magicMissile == null)
+                {
+                    Debug.Log("even more bruh");
+                }
+                bookMR.material = magicMissile;
+                break;
 
             case SpellTypes.Fire:
-                return new Color(1f, 0f, 0f);
+                bookMR.material = Fire;
+                break;
 
             case SpellTypes.Lightning:
-                return new Color(1f, 1f, 0f);
+                bookMR.material =  Lightning;
+                break;
 
             case SpellTypes.Earth:
-                return new Color(0.4f, 0.2f, 0f);
+                bookMR.material =  Earth;
+                break;
 
             default:
-                return new Color(0f, 0f, 0f);
+                bookMR.material =  magicMissile;
+                break;
         }
     }
 

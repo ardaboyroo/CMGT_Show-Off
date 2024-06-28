@@ -245,7 +245,8 @@ public class BossAttacker : MonoBehaviour
         if (growTimer < growSpeed)
         {
             growTimer += Time.deltaTime;
-            hairballInstance.transform.localScale = Vector3.Lerp(Vector3.zero, hairballTargetScale, growTimer / growSpeed);
+            if (hairballInstance)
+                hairballInstance.transform.localScale = Vector3.Lerp(Vector3.zero, hairballTargetScale, growTimer / growSpeed);
         }
     }
 

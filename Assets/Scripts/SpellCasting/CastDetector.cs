@@ -76,7 +76,8 @@ public class CastDetector : MonoBehaviour
             {
                 if (point == points[currentPoint])
                 {
-                    CreateAndPlayAudio();
+                    //CreateAndPlayAudio();
+                    AudioManager.Play3DOneShot(point, orbHitClip, 1f, Mathf.Lerp(beginPitch, endPitch, (float)(currentPoint) / (float)(points.Count - 1)));
                     currentPoint++;
                     point.SetActive(false);
                     Instantiate(particle, point.transform.position, Quaternion.identity);
@@ -134,21 +135,6 @@ public class CastDetector : MonoBehaviour
                 mr.material = pointMaterials.Last();
             }
         }
-    }
-
-    void CreateAndPlayAudio()
-    {
-        GameObject obj = new GameObject("Orb Hit SFX");
-        AudioSource src = obj.AddComponent<AudioSource>();
-
-        src.clip = orbHitClip;
-        src.loop = false;
-        src.spatialBlend = 1f;
-        src.volume = 2f;
-        src.pitch = Mathf.Lerp(beginPitch, endPitch, (float)(currentPoint) / (float)(points.Count - 1));
-        src.Play();
-
-        Destroy(obj, orbHitClip.length + 1f);
     }
 
     void TriggerHaptic()

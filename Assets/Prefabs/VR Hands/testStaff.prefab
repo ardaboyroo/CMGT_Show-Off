@@ -404,7 +404,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1695841675134466970, guid: 39e05fc80fd56c5489936c44be0331ea, type: 3}
+  - {fileID: 2100000, guid: 76cb2a3f4942a2d448c4958fcff497c9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -996,7 +996,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 19.88638, y: 105.14407, z: 127.37623}
   m_Center: {x: 0.72040176, y: 52.071793, z: 63.18813}
