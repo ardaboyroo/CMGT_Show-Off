@@ -283,6 +283,11 @@ public class BossAttacker : MonoBehaviour
     //////////////////////
     void OnAttackLaser()
     {
+        if (leftLaserInstance)
+            Destroy(leftLaserInstance);
+        if (rightLaserInstance)
+            Destroy(rightLaserInstance);
+
         leftLaserInstance = Instantiate(laserPrefab, leftEye.position, Quaternion.identity);
         leftLaserInstance.transform.LookAt(target.position);
         leftLaserInstance.transform.Rotate(Vector3.right, 90f);
@@ -301,7 +306,7 @@ public class BossAttacker : MonoBehaviour
 
     void OnUpdateLaser()
     {
-        if (!(leftHitEarth && rightHitEarth))
+        if (!leftHitEarth && !rightHitEarth) // !(leftHitEarth && rightHitEarth)
         {
             laserDamageTimer += Time.deltaTime;
             if (laserDamageTimer >= timeTillDamage)
@@ -334,6 +339,8 @@ public class BossAttacker : MonoBehaviour
         // Left eye
         RaycastHit[] leftHits = Physics.RaycastAll(leftEye.position, target.position - leftEye.position);
         leftHitEarth = false;
+        if (leftLaserInstance)
+            leftLaserInstance.transform.localScale = new Vector3(1f, (target.position - leftEye.position).magnitude, 1f);
         foreach (RaycastHit hit in leftHits)
         {
             if (hit.transform.tag == "Earth")
@@ -342,7 +349,7 @@ public class BossAttacker : MonoBehaviour
                 if (!earthInstance)
                 {
                     earthInstance = hit.transform.gameObject;
-                    earthInstanceScale = new Vector3(10, 10, 10); // don't hardcode
+                    earthInstanceScale = new Vector3(10, 10, 10); // TODO: don't hardcode
                 }
 
                 if (leftLaserInstance)
@@ -353,6 +360,8 @@ public class BossAttacker : MonoBehaviour
         // Right eye
         RaycastHit[] rightHits = Physics.RaycastAll(rightEye.position, target.position - rightEye.position);
         rightHitEarth = false;
+        if (rightLaserInstance)
+            rightLaserInstance.transform.localScale = new Vector3(1f, (target.position - rightEye.position).magnitude, 1f);
         foreach (RaycastHit hit in rightHits)
         {
             if (hit.transform.tag == "Earth")
@@ -361,7 +370,7 @@ public class BossAttacker : MonoBehaviour
                 if (!earthInstance)
                 {
                     earthInstance = hit.transform.gameObject;
-                    earthInstanceScale = new Vector3(10, 10, 10); // don't hardcode
+                    earthInstanceScale = new Vector3(10, 10, 10); // TODO: don't hardcode
                 }
 
                 if (rightLaserInstance)
